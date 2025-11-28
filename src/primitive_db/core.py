@@ -27,10 +27,13 @@ def action_create_table(*args, **kwargs):
         "Доступные типы: " + ', '.join(DATA_BASE_TYPES))
         return
 
-    if not 'ID' in list(table_colums.keys()):
-        table_colums['ID'] = 'int'
-
     colums_list = []
+
+    if not 'ID' in list(table_colums.keys()):
+        colums_list.append({'name' : 'ID', 
+                            'cell_type' : 'int',
+                            'items' : []})
+        
     for i in range(0, len(table_colums.items())):
         colums_list.append({'name' : list(table_colums.keys())[i], 
                             'cell_type' : list(table_colums.values())[i],
@@ -65,7 +68,7 @@ def action_drop_table(*args, **kwargs):
         return
     
     tables.pop(args[0][0])
-    print(f'Таблица {args[0][0]} успешно удалена')
+    print(f'Таблица "{args[0][0]}" успешно удалена')
     utils.save_metadata(METADATA_FILE, tables)
     
 def action_exit(*args, **kwargs):
