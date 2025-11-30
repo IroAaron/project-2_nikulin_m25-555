@@ -1,0 +1,52 @@
+[
+    {
+        "name": "ID",
+        "cell_type": "int",
+        "items": [
+            1,
+            2,
+            3,
+            5
+        ]
+    },
+    {
+        "name": "name",
+        "cell_type": "str",
+        "items": [
+            "doggy",
+            "momo",
+            "shiny",
+            "cheburashka"
+        ]
+    },
+    {
+        "name": "age",
+        "cell_type": "int",
+        "items": [
+            "3",
+            "3",
+            "100",
+            "3"
+        ]
+    },
+    {
+        "name": "type",
+        "cell_type": "str",
+        "items": [
+            "cat",
+            "dog",
+            "crocodile",
+            "monkey"
+        ]
+    },
+    {
+        "name": "alive",
+        "cell_type": "bool",
+        "items": [
+            true,
+            true,
+            false,
+            true
+        ]
+    }
+]

@@ -1,0 +1,46 @@
+[
+    {
+        "name": "ID",
+        "cell_type": "int",
+        "items": [
+            2,
+            3,
+            4,
+            5,
+            6
+        ]
+    },
+    {
+        "name": "aaa",
+        "cell_type": "str",
+        "items": [
+            "banana",
+            "cherry",
+            "date",
+            "elderberry",
+            "tomato"
+        ]
+    },
+    {
+        "name": "bbb",
+        "cell_type": "int",
+        "items": [
+            50,
+            75,
+            100,
+            125,
+            150
+        ]
+    },
+    {
+        "name": "ccc",
+        "cell_type": "bool",
+        "items": [
+            false,
+            true,
+            false,
+            true,
+            true
+        ]
+    }
+]
