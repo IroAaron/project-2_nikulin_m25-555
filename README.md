@@ -24,7 +24,7 @@ delete from <имя_таблицы> where <столбец> = <значение> 
 info <имя_таблицы> - вывести информацию о таблице
 help - справочная информация
 exit - выйти из программы
-# Запись asciinema
+# Запись asciinema базы данных
 {"version": 2, "width": 80, "height": 24, "timestamp": 1764540376, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}
 [0.016423, "o", "\u001b[?2004h\u001b]0;aaron@aaron-desttop: ~/projects/primitive_data_base/project-2_nikulin_m25-555\u0007\u001b[01;32maaron@aaron-desttop\u001b[00m:\u001b[01;34m~/projects/primitive_data_base/project-2_nikulin_m25-555\u001b[00m$ "]
 [2.104849, "o", "d"]

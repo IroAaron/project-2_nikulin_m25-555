@@ -126,11 +126,13 @@ def action_update(table_name, clauses):
         where_clause_filter.lower(), 
         range(len(column_by_key['items']))))
     
+    changed_id_rows = []
     for i in range(0, len(indeces)):
-        utils.set_new_value_to_row(
-            table_name, set_clause_key, indeces[i], set_clause_value)
+        changed_id_rows.append(str(utils.set_new_value_to_row(
+            table_name, set_clause_key, indeces[i], set_clause_value)))
     
-    print(f"Запись(и) с ID={indeces} в таблице '{table_name}' успешно обновлены")
+    print(f"Запись(и) с ID=({', '.join(changed_id_rows)}) " \
+          f"в таблице '{table_name}' успешно обновлены")
     
 
 def action_delete(table_name, where_clause):
@@ -161,7 +163,7 @@ def action_delete(table_name, where_clause):
     if select_key not in pt.field_names:
         print(f'{select_key} неверный ключ сортировки')
         return
-        
+    
     column_by_key = next(filter(lambda x: x['name'] == select_key, table), None)
     if utils.check_data_type(select_filter, column_by_key['cell_type']) is None:
         print("Тип значения сортировки не соответствует типу столбца")
@@ -170,10 +172,16 @@ def action_delete(table_name, where_clause):
     indeces = list(filter(
         lambda i: str(column_by_key['items'][i]).lower() == select_filter.lower(), 
         range(len(column_by_key['items']))))
-    for index in indeces:
-        utils.remove_rows(table_name, index)
+
+    deleted_id_elements = utils.remove_rows(table_name, indeces)
+
+    if deleted_id_elements == []:
+        print(f"Элементов сортировки по ключу {select_key} = {select_filter}" \
+              "не найдено")
+        return
     
-    print(f"Запись(и) с ID={indeces} в таблице '{table_name}' успешно удалены")
+    print(f"Запись(и) с ID=({', '.join(map(str, deleted_id_elements))}) " \
+           f"в таблице '{table_name}' успешно удалены")
 
 def action_info(table_name):
     pt = PrettyTable()
@@ -345,15 +353,16 @@ def read_command(command):
             break
     try:
         values = shlex.split(command.replace(command_name, ''))
-    except TypeError as e:
-        print(f"Команда {e} не найдена")
+    except TypeError:
+        print("Команда не найдена. Повторите попытку")
+        return
 
     for i in range(0, len(values)):
         if '"' in values:
             values[i] = values[i].replace('"', '')
         if "'" in values:
             values[i] = values[i].replace("'", '')
-
+    
     match command_name:
         case 'create_table':
             try:

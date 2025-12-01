@@ -88,13 +88,21 @@ def set_new_value_to_row(table_name, colum_name, index, new_value):
     column = next(filter(lambda x: x['name'] == colum_name, table), None)
     table[table.index(column)]['items'][index] = new_value
     save_table_data(table_name, table)
+    return table[0]['items'][index]
 
-def remove_rows(table_name, index):
-    table = load_table_data(table_name, )
-    for i in range(0, len(table)):
-        table[i]['items'].remove(table[i]['items'][index])
+def remove_rows(table_name, indeces):
+    table = load_table_data(table_name)
+    removed_ids = []
+    for index in indeces:
+        removed_ids.append(table[0]['items'][index])
+
+    for removed_id in removed_ids:
+        index = table[0]['items'].index(removed_id)
+        for i in range(0, len(table)):
+                table[i]['items'].pop(index)
     
     save_table_data(table_name, table)
+    return removed_ids
 
 
 
