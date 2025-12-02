@@ -39,25 +39,19 @@ def finish_program():
 
 
 available_actions = {
-    "create_table" : {
-        "command" : core.action_create_table,
-        "description" : "<имя_таблицы> <столбец1:тип> <столбец2:тип> .. " \
-        "- создать таблицу"
+    "create_table <имя_таблицы> <столбец1:тип> <столбец2:тип> .. " : {
+        "description" : "создать таблицу"
         },
     "list_tables" : {
-        "command" : core.action_show_list_tables,
         "description" : "показать список всех таблиц"
         },
     "drop_table" : {
-        "command" : core.action_drop_table,
         "description" : "<имя_таблицы> - удалить таблицу"
         },   
     "help" : {
-        "command" : core.action_show_commands,
         "description" : "справочная информация"
         },
     "exit" : {
-        "command" : core.action_exit,
         "description" : "выйти из программы"
         },
 }

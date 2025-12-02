@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "project-2-nikulin-m25-555"
 version = "0.1.0"
-description = ""
+description = "hand-made primitive programm for working with databases"
 authors = ["Aaron <denniksez@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "src"}]

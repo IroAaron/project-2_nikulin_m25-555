@@ -2,6 +2,8 @@ import shlex
 
 from prettytable import PrettyTable
 
+from src import decorators
+
 from . import engine, utils
 from .constatns import AVAILABLE_COMMANDS, DATA_BASE_TYPES, METADATA_FILE
 
@@ -19,6 +21,8 @@ def action_show_commands():
     for command in actions.keys():
         print(f"<command> {command} - {actions[command]['description']}")
 
+@decorators.handle_db_errors
+@decorators.log_time
 def action_select(table_name, where_clause=None):
     pt = PrettyTable()
     table = utils.load_table_data(table_name)
@@ -27,26 +31,12 @@ def action_select(table_name, where_clause=None):
         for i in range(0, len(table[0]['items'])):
             pt.add_row(utils.get_row(table, i))
     else:
-        try:
-            where_clause.remove('where')
-        except ValueError:
-            print('Отсутствует обозначатель аргументов добавляемой строки "where"')
-            return
-        try:
-            select_key = where_clause[0]
-        except IndexError:
-            print('Отсутствует ключ сортировки')
-            return
-        try:
-            where_clause.remove('=')
-        except ValueError:
-            print('Отсутствует обозначатель фильтра "="')
-            return
-        try:
-            select_filter = where_clause[1]
-        except IndexError:
-            print('Отсутствует значение сортировки')
-            return
+        where_clause.remove('where')
+        select_key = where_clause[0]
+        where_clause.remove('=')
+        select_filter = where_clause[1]
+        select_filter = where_clause[1]
+
         if select_key not in pt.field_names:
             print(f'{select_key} неверный ключ сортировки')
             return
@@ -64,54 +54,28 @@ def action_select(table_name, where_clause=None):
 
     print(pt)
 
-
+@decorators.handle_db_errors
 def action_update(table_name, clauses):
     pt = PrettyTable()
     table = utils.load_table_data(table_name)
     pt.field_names = list(map(lambda x: x['name'], table))
-    try:
-        clauses.remove('set')
-    except ValueError:
-        print('Отсутствует обозначатель аргументов обновленный аргументов "set"')
-        return
-    try:
-        set_clause_key = clauses[0]
-    except IndexError:
-        print('Отсутствует наименование столбца')
-        return
-    try:
-        clauses.remove('=')
-    except ValueError:
-        print('Отсутствует обозначатель присваивания "="')
-        return
-    try:
-        set_clause_value = clauses[1]
-    except IndexError:
-        print('Отсутствует новое значение')
-        return
+    clauses.remove('set')
+    set_clause_key = clauses[0]
+    clauses.remove('=')
+    clauses.remove('set')
+    set_clause_key = clauses[0]
+    clauses.remove('=')
+    set_clause_value = clauses[1]
+
     if set_clause_key not in pt.field_names:
         print(f'{set_clause_key} неверное наименование столбца')
         return
-    try:
-        clauses.remove('where')
-    except ValueError:
-        print('Отсутствует обозначатель аргументов добавляемой строки "where"')
-        return
-    try:
-        where_clause_key = clauses[2]
-    except IndexError:
-        print('Отсутствует ключ сортировки')
-        return
-    try:
-        clauses.remove('=')
-    except ValueError:
-        print('Отсутствует обозначатель фильтра "="')
-        return
-    try:
-        where_clause_filter = clauses[3]
-    except IndexError:
-        print('Отсутствует значение сортировки')
-        return
+    
+    clauses.remove('where')
+    where_clause_key = clauses[2]
+    clauses.remove('=')
+    where_clause_filter = clauses[3]
+
     if where_clause_key not in pt.field_names:
         print(f'{where_clause_key} неверный ключ сортировки')
         return
@@ -133,33 +97,19 @@ def action_update(table_name, clauses):
     
     print(f"Запись(и) с ID=({', '.join(changed_id_rows)}) " \
           f"в таблице '{table_name}' успешно обновлены")
-    
 
+@decorators.handle_db_errors
+@decorators.confirm_action("удаление строк")
 def action_delete(table_name, where_clause):
     pt = PrettyTable()
     table = utils.load_table_data(table_name)
     pt.field_names = list(map(lambda x: x['name'], table))
 
-    try:
-        where_clause.remove('where')
-    except ValueError:
-        print('Отсутствует обозначатель аргументов добавляемой строки "where"')
-        return
-    try:
-        select_key = where_clause[0]
-    except IndexError:
-        print('Отсутствует ключ сортировки')
-        return
-    try:
-        where_clause.remove('=')
-    except ValueError:
-        print('Отсутствует обозначатель фильтра "="')
-        return
-    try:
-        select_filter = where_clause[1]
-    except IndexError:
-        print('Отсутствует значение сортировки')
-        return
+    where_clause.remove('where')
+    select_key = where_clause[0]
+    where_clause.remove('=')
+    select_filter = where_clause[1]
+
     if select_key not in pt.field_names:
         print(f'{select_key} неверный ключ сортировки')
         return
@@ -193,16 +143,14 @@ def action_info(table_name):
 
     print(pt)
 
+@decorators.handle_db_errors
+@decorators.log_time
 def action_insert(table_name, values):
     if table_name not in utils.get_tables_names():
         print(f"Таблицы с именем {table_name} не существует")
         return
     
-    try:
-        values = values[values.index('values') + 1:]
-    except ValueError:
-        print('Отсутствует обозначатель аргументов добавляемой строки "values"')
-        return
+    values = values[values.index('values') + 1:]
 
     if '(' in values[0]:
         values[0] = values[0].replace('(', '')
@@ -250,6 +198,7 @@ def action_insert(table_name, values):
     
     print(f"Запись с ID={data_id} успешно добавлена в таблицу '{table_name}'")
 
+@decorators.handle_db_errors
 def action_create_table(table_name, colums):
     tables = engine.tables
     if ':' in table_name:
@@ -259,15 +208,11 @@ def action_create_table(table_name, colums):
     colums_names = []
     colums_types = []
 
-    for i in range(0, len(colums)):
-        try:
-            colum_data = colums[i].split(':')
-            colums_names.append(colum_data[0])
-            colums_types.append(colum_data[1])
-        except ValueError:
-            print("Таблица не создана. Нет разделителя " \
-            "между типом данных и именем столбца")
-            return
+    for i in range(0, len(colums)):     
+        colum_data = colums[i].split(':')
+        colums_names.append(colum_data[0])
+        colums_types.append(colum_data[1])
+
         if '' == colums_types[i]:
             print(f"Таблица не создана. Для колонки '{colums_names[i]}'" \
                    "не указан тип данных")
@@ -324,6 +269,7 @@ def action_show_list_tables():
     for table in list(tables.keys()):
         print(f"- {table}")
 
+@decorators.confirm_action("удаление таблицы")
 def action_drop_table(table_name):
     tables = utils.get_tables_names() if engine.database_state else engine.tables
 
@@ -342,6 +288,9 @@ def action_drop_table(table_name):
 def action_exit():
     engine.finish_program()
 
+cache = decorators.create_cacher()
+
+@decorators.handle_db_errors
 def read_command(command):
     command_multiplayer = ''
 
@@ -351,12 +300,9 @@ def read_command(command):
             (cmd for cmd in AVAILABLE_COMMANDS if cmd == command_multiplayer), None)
         if command_name is not None:
             break
-    try:
-        values = shlex.split(command.replace(command_name, ''))
-    except TypeError:
-        print("Команда не найдена. Повторите попытку")
-        return
 
+    values = shlex.split(command.replace(command_name, ''))
+    
     for i in range(0, len(values)):
         if '"' in values:
             values[i] = values[i].replace('"', '')
@@ -365,45 +311,25 @@ def read_command(command):
     
     match command_name:
         case 'create_table':
-            try:
-                action_create_table(values[0], values[1:])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_create_table(values[0], values[1:])
         case 'list_tables':
             action_show_list_tables()
         case 'drop_table':
-            try:
-                action_drop_table(values[0])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_drop_table(values[0])
         case 'insert into':
-            try:
-                action_insert(values[0], values[1:])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_insert(values[0], values[1:])
         case 'select from':
-            try:
-                if len(values[1:]) > 0:
-                    action_select(values[0], values[1:])
-                else:
-                    action_select(values[0])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            global cache
+            if len(values[1:]) > 0:
+                cache(command, action_select)(values[0], values[1:])
+            else:
+                cache(command, action_select)(values[0])
         case 'update':
-            try:
-                action_update(values[0], values[1:])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_update(values[0], values[1:])
         case 'delete from':
-            try:
-                action_delete(values[0], values[1:])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_delete(values[0], values[1:])
         case 'info':
-            try:
-                action_info(values[0])
-            except IndexError:
-                print("Отсутствуют необходимые аргументы")
+            action_info(values[0])
         case 'help':
             action_show_commands()
         case 'exit':

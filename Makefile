@@ -20,4 +20,4 @@ lint-fix:
 	poetry run ruff check . --fix
 
 rec:
-	asciinema rec primitive_db.cast
+	asciinema rec primitive_db_decorators.cast

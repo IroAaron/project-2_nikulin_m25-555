@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Meta
+/src/primitive_db/db_meta.json
+/src/primitive_db/data/
+/primitive_db.cast
+/primitive_db_decorators.cast
